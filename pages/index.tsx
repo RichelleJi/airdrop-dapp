@@ -3,28 +3,30 @@ import Head from "next/head";
 import Link from "next/link";
 import Account from "../components/Account";
 import ETHBalance from "../components/ETHBalance";
-import TokenBalance from "../components/TokenBalance";
+import CsvFileInput from "../components/CsvFileInput";
+import TokenAirdrop from "../components/TokenAirdrop";
 import useEagerConnect from "../hooks/useEagerConnect";
+import React, {useState} from "react";
 
-const DAI_TOKEN_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f";
 
 function Home() {
   const { account, library } = useWeb3React();
-
   const triedToEagerConnect = useEagerConnect();
+  const [tokenRecipients, setTokenRecipients] = useState<string[]>([]);
+  const [tokenAmounts, setTokenAmounts] = useState([]);
 
   const isConnected = typeof account === "string" && !!library;
 
   return (
     <div>
       <Head>
-        <title>next-web3-boilerplate</title>
+        <title>airdrop-dapp</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <header>
         <nav>
-          <Link href="/">next-web3-boilerplate</Link>
+          <Link href="/">airdrop-dapp</Link>
 
           <Account triedToEagerConnect={triedToEagerConnect} />
         </nav>
@@ -33,16 +35,23 @@ function Home() {
       <main>
         <h1>
           Welcome to{" "}
-          <a href="https://github.com/mirshko/next-web3-boilerplate">
-            next-web3-boilerplate
+          <a>
+            Airdrop Dapp
           </a>
         </h1>
 
         {isConnected && (
           <section>
-            <ETHBalance />
-
-            <TokenBalance tokenAddress={DAI_TOKEN_ADDRESS} symbol="DAI" />
+            <ETHBalance/>
+            <CsvFileInput
+              setTokenRecipients={setTokenRecipients}
+              setTokenAmounts={setTokenAmounts}
+            />
+            {tokenAmounts.length > 0 && <TokenAirdrop
+              tokenRecipients={tokenRecipients}
+              tokenAmounts={tokenAmounts}
+            />
+            }
           </section>
         )}
       </main>
